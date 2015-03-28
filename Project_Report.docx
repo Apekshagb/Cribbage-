@@ -1,0 +1,48 @@
+Cribbage Player AI
+Kayla Henneman, Apeksha Barhanpur, Swaraj Wankhade
+Background
+Cribbage is a card game which is usually played with two players.  The game consists of several rounds, ending when one player reaches 121 points and therefore wins the game. Players generally keep track of points by using a cribbage board and pegs.  In each round, the players are dealt six cards.  The players score points based on a number of criteria such as summation of cards equal to fifteen, pairs, runs, etc.  Each fifteen and pair are worth two points each and runs are worth the number of cards making up the run (a minimum of three cards).  Cards are worth their face values, with Ace being worth 1 and Jack, Queen, and King worth 10.
+There are four stages in each round:  
+•	Each player discards two cards to the crib, leaving four cards
+•	Players take turns laying down cards, which can be used to peg additional points 
+•	Players count the number of points in the hand they kept, with the addition of a random card flipped after the discards are made—both players use the same random card
+•	The dealer counts the crib, made of the discarded cards, and gets the points in the crib—this rotates from player to player each round 
+To gain a better understanding of how points are earned in cribbage, consider the scenario:
+A player was dealt these six cards:  [6, ♥] [6, ♦] [7, ♦] [8, ♠] [J, ♠] [J, ♦], chose to discard [J, ♠] [J, ♦], and [9, ♠] was flipped. The player is then left with [6, ♥] [6, ♦] [7, ♦] [8, ♠] in his hand and can also use the random card [9, ♠].  The player then has 16 points—6 from three fifteens ([6, ♥] [9, ♠], [6, ♦] [9, ♠] and [7, ♦] [8, ♠]), 8 from two runs ([6, ♥] [7, ♦] [8, ♠] [9, ♠] and [6, ♦] [7, ♦] [8, ♠] [9, ♠]), and 2 from one pair ([6, ♥] [6, ♦]).  
+Problem Description
+In the above scenario, the player may choose to discard differently based on whose crib it is.  If it is his crib, the above discard decision gives him the maximum amount of points in both his hand (16) and his crib (2).  However, if it is his opponent’s crib, he may not wish to throw a pair of Jacks since this gives his opponent a guaranteed 2 points.  Thus we can see two strategies arising based on whose crib it is:
+Your crib:  Maximize both your hand and your crib
+Opponents crib:  Maximize your hand while minimizing your opponent’s crib.
+Based on the above observation, we can see another way to interpret a player’s total score for one round is:
+	Your crib:  Round score = hand score + crib score
+	Opponent’s crib:  Round score = hand score – crib score
+In this way, our discard strategy is always to maximize our round score.  This will be important when training our cribbage player.  
+	Thus, we can define our goal as:  Implement a Cribbage Player AI which makes intelligent discard decisions by maximizing its round score.
+Rules and Assumptions
+In order to simplify the game to keep within the scope of this project, we will make the following assumptions:
+•	We will ignore stage two of a round
+•	A player will only gain points by having cards which sum to fifteen, having a run of three or more, or by having pairs.  Points will be given as follows:
+	Two points for each fifteen
+	One point for each card in the run (3-card run = 3 points, 4-card run = 4 points, etc)
+	Two points for each pair
+•	The score of a round is determined based on whose crib it is, as given above
+•	The winner will be the first player which has 121 points or more
+Methods
+	The training algorithm we employ is based on evolutionary strategies.  This type of algorithm is similar to genetic algorithms, except they use only mutation and neglect cross over and selection.  The algorithm we use is as follows:
+•	Create population of n hands, ignoring suit
+	This gives us a possibility of 18,395 hands instead of 20,358,520 possible hands
+•	Assign each card in each hand a value, v, such that 0.1 ≤ v ≤ 0.9
+•	Train each hand m times
+	Choose the two cards associated with the smallest values to discard
+	If discard is successful , keep these values
+	If discard is unsuccessful, replace these two values with new values
+	Choose new values at random
+Results
+	When training, we saw that optimal training occurs after training a hand roughly 400 times.  We also saw that once we increase the size of the population to 100, we’re able to see our training improve the average consistently instead of seeing the training results go up and down with lower populations.  Furthermore, as we can expect, the optimal average is roughly one point lower when it is the opponent’s crib.  These results can be seen in Figure 1.
+	In Figure 2, we show the results for training all the possible hands 50 times.  From this, we can see that the training should run for a longer period in order to get better results.  This is especially evident when the computer plays against a human player, as the computer consistently makes poor choices.  
+ 
+Figure 1
+ 
+Figure 2
+Conclusion
+	We are able to conclude that training indeed takes place and we were able to implement a simplified version of Cribbage in which the Cribbage Player AI is able to make fairly good decisions.  Although the computer currently plays poorly, it is only because we cut training off after only training each hand 50 times instead of letting the training continue for the optimal 500 times.  We did this because training all 18,395 hands is quite time consuming.  One way to counteract this problem without having to complete the training for 500 times would be to allow the computer to continue training while playing a human player.  Another difficulty we encounter when training the Cribbage Player AI is the randomness of what the opponent will throw into the crib.  It is often common for a player to throw cards with value 5 to their on crib because of the higher probability of getting a fifteen with the flip card.   In this way, we would be able to see the computer player improve with the more games it played.  However, we leave this to future work.  Other future work includes extending the Cribbage game to include Stage 2 of a round.  This would be increasingly difficult to train the Cribbage Player AI due to the randomness involved.  
